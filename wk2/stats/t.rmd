@@ -1,0 +1,35 @@
+
+```{r}
+stats = function(x)
+{  
+   res = c("mean" = mean(x),
+   "med" = median(x,
+   "q1" = quantile(x)[2],
+   "q2" = quantile(x)[3],
+   "q3" = quantile(x)[4],
+   "min" = range(x)[1],
+   "max" = range(x)[2],
+   "iqr" = IQR(x),
+   "var" = var(x),
+   "sd" = sd(x))
+   return(res)
+}
+
+apply(experience, stats)
+```
+
+
+df=data.frame("a"=1:3, "b" = 1:3)
+
+df2=data.frame("a"=4:10, "c"= 24:30)
+
+merge(df,df2)
+
+f= function(x){
+3*x^(-4)
+}
+
+f1= integrate(f, lower =1, upper = 4)
+f1= integrate(f, lower =2, upper = 3)
+
+f1

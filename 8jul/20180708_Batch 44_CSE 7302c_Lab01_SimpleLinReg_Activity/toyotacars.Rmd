@@ -1,0 +1,19 @@
+---
+title: "Toyotacars"
+author: "Sriram"
+date: "7/8/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+
+```
+```{r results='hold'}
+setwd('/Users/bsriram/Downloads/tmp1/20180708_Batch 44_CSE 7302c_Lab01_SimpleLinearRegression')
+dataFile = "Toyota_SimpleReg.csv"
+Toyota = read.delim(dataFile,sep=",",header=TRUE)
+dim(Toyota)
+
+```

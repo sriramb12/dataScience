@@ -1,0 +1,130 @@
+[1] "Assignment 1"
+[1] " What will be the final output?"
+[1] 3.380952
+[1] "-------------------------"
+[1] "Assignment 2"
+[1] 42
+[1] 42
+[1] "-------------------------"
+[1] "Assignment 3"
+[1] " Create a vector that contains numbers between the interval of 1 to 2500, with an increment of 6."
+  [1]    1    7   13   19   25   31   37   43   49   55   61   67   73   79   85
+ [16]   91   97  103  109  115  121  127  133  139  145  151  157  163  169  175
+ [31]  181  187  193  199  205  211  217  223  229  235  241  247  253  259  265
+ [46]  271  277  283  289  295  301  307  313  319  325  331  337  343  349  355
+ [61]  361  367  373  379  385  391  397  403  409  415  421  427  433  439  445
+ [76]  451  457  463  469  475  481  487  493  499  505  511  517  523  529  535
+ [91]  541  547  553  559  565  571  577  583  589  595  601  607  613  619  625
+[106]  631  637  643  649  655  661  667  673  679  685  691  697  703  709  715
+[121]  721  727  733  739  745  751  757  763  769  775  781  787  793  799  805
+[136]  811  817  823  829  835  841  847  853  859  865  871  877  883  889  895
+[151]  901  907  913  919  925  931  937  943  949  955  961  967  973  979  985
+[166]  991  997 1003 1009 1015 1021 1027 1033 1039 1045 1051 1057 1063 1069 1075
+[181] 1081 1087 1093 1099 1105 1111 1117 1123 1129 1135 1141 1147 1153 1159 1165
+[196] 1171 1177 1183 1189 1195 1201 1207 1213 1219 1225 1231 1237 1243 1249 1255
+[211] 1261 1267 1273 1279 1285 1291 1297 1303 1309 1315 1321 1327 1333 1339 1345
+[226] 1351 1357 1363 1369 1375 1381 1387 1393 1399 1405 1411 1417 1423 1429 1435
+[241] 1441 1447 1453 1459 1465 1471 1477 1483 1489 1495 1501 1507 1513 1519 1525
+[256] 1531 1537 1543 1549 1555 1561 1567 1573 1579 1585 1591 1597 1603 1609 1615
+[271] 1621 1627 1633 1639 1645 1651 1657 1663 1669 1675 1681 1687 1693 1699 1705
+[286] 1711 1717 1723 1729 1735 1741 1747 1753 1759 1765 1771 1777 1783 1789 1795
+[301] 1801 1807 1813 1819 1825 1831 1837 1843 1849 1855 1861 1867 1873 1879 1885
+[316] 1891 1897 1903 1909 1915 1921 1927 1933 1939 1945 1951 1957 1963 1969 1975
+[331] 1981 1987 1993 1999 2005 2011 2017 2023 2029 2035 2041 2047 2053 2059 2065
+[346] 2071 2077 2083 2089 2095 2101 2107 2113 2119 2125 2131 2137 2143 2149 2155
+[361] 2161 2167 2173 2179 2185 2191 2197 2203 2209 2215 2221 2227 2233 2239 2245
+[376] 2251 2257 2263 2269 2275 2281 2287 2293 2299 2305 2311 2317 2323 2329 2335
+[391] 2341 2347 2353 2359 2365 2371 2377 2383 2389 2395 2401 2407 2413 2419 2425
+[406] 2431 2437 2443 2449 2455 2461 2467 2473 2479 2485 2491 2497
+[1] " Subset the first 50 elements of that vector"
+ [1]   1   7  13  19  25  31  37  43  49  55  61  67  73  79  85  91  97 103 109
+[20] 115 121 127 133 139 145 151 157 163 169 175 181 187 193 199 205 211 217 223
+[39] 229 235 241 247 253 259 265 271 277 283 289 295
+[1] "-------------------------"
+[1] "Assignment 4"
+[1] 230
+[1] -314
+[1] -84
+[1] "-------------------------"
+[1] "Assignment 5"
+[1] " Create a vector Player with two elements. Assign column names as Name and Profession. Print the result."
+       [,1]   [,2]        
+cnames "Name" "Profession"
+       "Ram"  "shyam"     
+[1] "-------------------------"
+[1] "Assignment 6"
+     [,1]  [,2]  [,3]  [,4] 
+[1,] "Jan" "Feb" "Mar" "Apr"
+[2,] "May" "Jun" "Jul" "Aug"
+[3,] "Sep" "Oct" "Nov" "Dec"
+            [,1] [,2] [,3] [,4]
+vector_sub     1    2    3    4
+vector_sub2    8   16   24   32
+     vector_sub vector_sub2
+[1,]          1           8
+[2,]          2          16
+[3,]          3          24
+[4,]          4          32
+[1] "-------------------------"
+[1] "Question 1: Create a vector with elements being 98, 82, 102, 99, 100"
+[1] "#   # a) Extract the first element"
+[1] 98
+[1] "#   # b) Extract the first and the fifth element from the vector."
+[1]  98 100
+[1] "Question 2: Create a vector containing a sequence of numbers in the interval of 40 to 1000, separated by 10. Find the length of the vector."
+[1] 97
+[1] "Question 3: Create a vector containing a sequence of numbers in the interval of 1 to 2500, separated by 6 and subset the first 50 elements of the vector"
+ [1]   1   7  13  19  25  31  37  43  49  55  61  67  73  79  85  91  97 103 109
+[20] 115 121 127 133 139 145 151 157 163 169 175 181 187 193 199 205 211 217 223
+[39] 229 235 241 247 253 259 265 271 277 283 289 295
+[1] "Question 4: Create a vector that has elements: 3, 4, 5, 7 and another vector with elements : 6, 9, 12, 15, 18, 21 ; Use the + and - operator between the two vectors and report your observation."
+[1] "Answer:"
+[1]  9 13 17 22 21 25
+[1]  -3  -5  -7  -8 -15 -17
+[1] "Observation: the operations + and - do not make sense on 2 vectors of different sizes"
+[1] "Question 5: Multiply c(34, 43, 22, 43) and c(13, 17)"
+[1] 442 731 286 731
+[1] "Question 6: Create two vectors of sequence 1 to 10 and 11 to 20; column bind these vectors; Now create a matrix containing data from 21 to 40 and column bind that matrix to the resultant matrix of the first operation."
+      v1 v2      
+ [1,]  1 11 21 31
+ [2,]  2 12 22 32
+ [3,]  3 13 23 33
+ [4,]  4 14 24 34
+ [5,]  5 15 25 35
+ [6,]  6 16 26 36
+ [7,]  7 17 27 37
+ [8,]  8 18 28 38
+ [9,]  9 19 29 39
+[10,] 10 20 30 40
+[1] "-------------------------"
+[1] "Question 7: "
+$first_element
+[1] FALSE
+
+[1] "-------------------------"
+[1] "Question 8: Create a data frame with two columns using the data.frame() function. First column should contain characters, second column should contain numeric objects. The columns should be assigned valid names."
+  ch num
+1  a   1
+2  b   2
+3  c   3
+4  d   4
+[1] "-------------------------"
+[1] "Question 9: Create a data frame with one column as a squence of numbers between 1 to 50, the other being from 51 to 100; After creating the data frame change the column names to column1 and column2"
+[1] "Before changing column names"
+  c1 c2
+1  1 51
+2  2 52
+3  3 53
+4  4 54
+5  5 55
+6  6 56
+[1] "After changing column names"
+  column1 column2
+1       1      51
+2       2      52
+3       3      53
+4       4      54
+5       5      55
+6       6      56
+[1] ""
+[1] "===End of Assignment-1===="

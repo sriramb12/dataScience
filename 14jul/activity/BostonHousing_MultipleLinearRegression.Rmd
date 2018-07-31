@@ -1,0 +1,297 @@
+---
+title: "BostonHousingData_MultipleLinearRegression"
+author: "INSOFE Lab"
+date: "14th July 2018"
+output:
+  html_document:
+    toc : yes
+    toc_depth : 5
+    toc_float : yes
+---
+# Agenda
+ - Build a Multiple Linear Regression model
+ - Analysis of the model
+```{r}
+# First things first , clean your R environment
+rm(list = ls(all=TRUE))
+# setwd("")       # Set the working directory
+```
+# Loading Libraries
+
+```{r}
+library(corrplot)
+library(DMwR)
+```
+
+# _*Multiple Linear Regression Model*_
+# Read or load data
+```{r}
+dataFile = "boston.csv"
+boston_housing_data = read.csv(dataFile)
+attach(boston_housing_data) # by attaching the dataframe to the memory, we can directly use the variable names
+
+```
+# Data Desctiption 
+
+Data description
+The Boston data frame has 506 rows and 14 columns.
+
+This data frame contains the following columns:
+
+- CRIM : per capita crime rate by town.
+
+- ZN : proportion of residential land zoned for lots over 25,000 sq.ft.
+
+- INDUS : proportion of non-retail business acres per town.
+
+- CHAS : Charles River dummy variable (= 1 if tract bounds river; 0 otherwise).
+
+- NOX : nitrogen oxides concentration (parts per 10 million).
+
+- RM : average number of rooms per dwelling.
+
+- AGE : proportion of owner-occupied units built prior to 1940.
+
+- DIS : weighted mean of distances to five Boston employment centres.
+
+- RAD : index of accessibility to radial highways.
+
+- TAX : full-value property-tax rate per $10,000.
+
+- PT : pupil-teacher ratio by town.
+
+- B : 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town.
+
+- LSTAT : lower status of the population (percent).
+
+- MV : median value of owner-occupied homes in $1000s.
+
+# EDA - Exploratory Data Analysis and Preprocessing steps
+1. Look at the number of rows and columns
+2. Column names
+3. Look at the structure of the dataset using the function `str()`
+4. Look at the summary of the dataset using the `summary()` 
+5. Checking for 'NA' values
+
+## 1. Look at the number of rows and columns
+
+```{r}
+dim(boston_housing_data)
+```
+
+## 2. Column names
+
+```{r}
+colnames(boston_housing_data)
+```
+
+## 3. Look at the structure of the dataset using the function `str()`
+
+```{r}
+str(boston_housing_data)
+```
+
+## 4. Look at the summary of the dataset using the `summary()` 
+
+```{r}
+summary(boston_housing_data)
+```
+
+## 5. Checking for 'NA' values
+```{r}
+sum(is.na(boston_housing_data))
+```
+## Converting a varible explicity to factor
+
+```{r}
+boston_housing_data$CHAS_F = factor(boston_housing_data$CHAS)
+#dummies::dummy(boston_housing_data$CHAS_F)
+boston_housing_data$CHAS_F1 = dummies::dummy(boston_housing_data$CHAS_F)[,1]
+boston_housing_data$CHAS_F = NULL
+
+```
+
+## Scatter plot with a few selected attributes
+
+```{r}
+pairs(~CRIM+ZN+INDUS+NOX+RM+LSTAT,data=boston_housing_data,main="Scatterplot matrix with selected attributes")
+```
+
+## Scatter plot with all attributes
+
+```{r}
+pairs(~.,data=boston_housing_data,main="Scatterplot matrix")
+```
+
+## Correlation
+
+```{r}
+correlation_XPairwise = cor(boston_housing_data[, !(colnames(boston_housing_data) %in% c("MV","CHAS_F1"))])
+corrplot(correlation_XPairwise)
+```
+
+
+### Write the pairwise correlation matrix to a csv file for later analysis
+
+```{r}
+write.table(correlation_XPairwise,file="pairwiseCorrelations1.csv",row.names=FALSE,col.names=FALSE,sep=",")
+```
+
+# Model building
+
+## Simple Linear Regression 
+
+```{r}
+lineFitSinglePredictor = lm(MV ~ LSTAT, data = boston_housing_data); # fit a simple linear regression model
+summary(lineFitSinglePredictor)
+```
+
+### Plot the scatter plot and the fitted line for single variable
+
+```{r}
+plotTitle = paste("Boston housing dataset : \n Median House Value vs %Lower Status Population\n Correlation coefficient = ",toString(cor(boston_housing_data$MV,boston_housing_data$LSTAT)),"\n MV = ",toString(lineFitSinglePredictor$coefficients[1]), "+ LSTAT*(",toString(lineFitSinglePredictor$coefficients[2]),")\n\n",sep=" ")
+plot(boston_housing_data$LSTAT,boston_housing_data$MV,main=plotTitle,xlab="%Lower Status Population (LSTAT)",ylab="Median House Value (MV)")
+abline(lineFitSinglePredictor,col="steelblue",lty=1,lwd=4)
+```
+
+### Summary of the model
+
+```{r}
+summary(lineFitSinglePredictor)
+```
+
+### Residual plots for the models
+
+```{r}
+plot(lineFitSinglePredictor,main="Linear model with a single predictor") 
+```
+
+### Cook's Distance plot for simple linear regression
+
+```{r}
+cd = cooks.distance(lineFitSinglePredictor)
+plot(cd,main=paste("boston_housing_data"," : \n Cook's distances for each sample for the Simple Linear Model",sep=" "),xlab="Index",ylab="Cook's distance")
+grid(10,10,lwd=2)
+
+```
+
+##  Multiple Linear Regression
+
+### Build Model
+
+```{r}
+
+lineFitMultiplePredictors = lm(boston_housing_data$MV ~ B+CRIM+RM+LSTAT)
+```
+
+### Summary of the model
+
+```{r}
+summary(lineFitMultiplePredictors) 
+```
+
+### Residual plots for the multiple linear regression model
+
+```{r}
+plot(lineFitMultiplePredictors,main="Linear model with a multiple predictor") 
+
+```
+
+### Regression using all predictors
+
+```{r}
+lineFit_All = lm(MV ~ ., data = boston_housing_data) 
+summary(lineFit_All)
+```
+
+### Regression using interaction terms
+```{r}
+lineFit_Interaction = lm(MV ~ LSTAT * AGE, data = boston_housing_data) 
+summary(lineFit_Interaction)
+plot(lineFit_Interaction)
+```
+
+### Regression using non-linear transformation of predictors
+
+```{r}
+lineFit_NonLinearTransform = lm(MV ~ CRIM + NOX + RM + DIS + PT + B + LSTAT + I(LSTAT ^ 2), data=boston_housing_data) 
+
+```
+
+### Regression using non-linear transformation of predictors along with a categorical predictor
+
+```{r}
+lineFit_NonLinearTransform_Categorical = lm(MV ~ CRIM + CHAS_F1 + NOX + RM + DIS + PT + B + LSTAT + I(LSTAT ^ 2), data=boston_housing_data) 
+summary(lineFit_NonLinearTransform_Categorical)
+plot(lineFit_NonLinearTransform,main="Linear model with multiple predictors and non-linear transformations") 
+
+```
+
+### Predictions on test data
+
+```{r}
+set.seed(123) # for reproducible results
+sample.size <- floor(0.75 * nrow(boston_housing_data))
+train.index <- sample(seq_len(nrow(boston_housing_data)), size = sample.size)
+train <- boston_housing_data[train.index,]
+test <- boston_housing_data[- train.index,]
+testPredictions_simple_linear_model = predict(lineFitSinglePredictor, test, interval = "confidence") 
+testPredictions_multiple_linear_model = predict(lineFit_All, test, interval = "confidence") 
+```
+
+## Evaluation of models
+
+### Simple Linear Regression
+
+```{r}
+regr.eval(trues = test[,c("MV","LSTAT")],preds = testPredictions_simple_linear_model)
+```
+
+
+### Mutiple Linear Regression
+
+```{r}
+regr.eval(trues = test,preds = testPredictions_multiple_linear_model)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

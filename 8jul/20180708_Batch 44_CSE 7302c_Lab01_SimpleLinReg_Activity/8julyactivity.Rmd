@@ -1,0 +1,24 @@
+---
+title: "Activity8july"
+author: "Sriram"
+date: "7/8/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# First things first, clean your R environment
+rm(list=ls())
+setwd('/Users/bsriram/Downloads/tmp1/20180708_Batch 44_CSE 7302c_Lab01_SimpleLinearRegression')
+
+```
+
+###Read data
+```{r echo = FALSE, results='hold'}
+dataFile = "Toyota_SimpleReg.csv"
+Toyota = read.delim(dataFile,sep=",",header=TRUE)
+```

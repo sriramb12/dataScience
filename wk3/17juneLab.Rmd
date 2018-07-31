@@ -1,0 +1,241 @@
+---
+title: "17lab"
+author: "Sriram"
+date: "6/17/2018"
+output: html_document
+---
+```{r}
+rm(list=ls())
+setwd('/Users/bsriram/datasci/june/wk3')
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Problem 3
+* The goal of the confidence interval is to estimate the **Sample Parameter**
+a) Population Parameter
+**b) Sample Parameter**
+```{r}
+cat("Answer: Sample Parameter\n")
+```
+## Problem 4
+* A random sample of 100 items is taken, producing a sample mean of 49. The population std. deviation is: 4.49. Compute the margin of error and construct a 90% confidence interval to estimate the population mean.
+```{r, results="hold", comment = NA}
+n = 100
+xbar = 49
+sigma = 4.49
+z = qnorm(0.05)
+se = sigma/sqrt(n)
+cat("\n Standard Error=", se)
+alpha = 0.1
+critical_value = qnorm(alpha/2, lower.tail = F)
+cat("\n Critical Value=", critical_value)
+marginOfError = critical_value *se
+cat("\n Margin of Error =", marginOfError)
+
+```
+## Problem 5
+* A random sample of 35 items is taken, with a sample mean of 2.364 with a sample variance of 0.81. Assume it is normally distributed and construct a 90% confidence interval for the population mean.
+```{r, results="hold", comment = NA}
+n = 35
+xbar = 2.364
+sample_variance = 0.81
+alpha = 0.01
+cat("\n Sample Mean = ", xbar)
+sample_sigma = sqrt(sample_variance)
+sigma = sample_sigma * sqrt(n)
+se = sigma/sqrt(n)
+cat("\n Standard Error = ", se)
+
+marginOfError = critical_value *se
+cat("\n Margin of Error =", marginOfError)
+critical_value = qnorm(alpha/2, lower.tail = F)
+
+upper_interval = xbar + marginOfError
+lower_interval = xbar - marginOfError
+cat("\n lower_interval=", lower_interval)
+cat("\n upper_interval=", upper_interval)
+```
+## Problem 6
+* The average zinc concentration recovered from a sample of zinc measurements in 36 different locations is found to be 2.6 grams per milliliter. Find the 95% and 99% confidence intervals for the mean zinc concentration in the river. Assume that the population standard deviation is 0.3. Does the increase in the confidence level increases the confidence interval?Similarly change the sample size to 100 and write your observation.
+```{r, results="hold", comment = NA}
+n = 36
+xbar = 2.364
+alpha = 0.01
+sigma = 0.3
+se = sigma/sqrt(n)
+sample_variance = 0.81
+cat("\n Sample Mean = ", xbar)
+sample_sigma = sqrt(sample_variance)
+sigma = sample_sigma * sqrt(n)
+cat("\n Standard Error = ", se)
+
+marginOfError = critical_value *se
+cat("\n Margin of Error =", marginOfError)
+critical_value = qnorm(alpha/2, lower.tail = F)
+
+upper_interval = xbar + marginOfError
+lower_interval = xbar - marginOfError
+cat("\n lower_interval=", lower_interval)
+cat("\n upper_interval=", upper_interval)
+n=36
+xbar = 2.6
+se = 0.05
+critical_value = 10
+
+```
+## Problem 7
+* The life in hours of a 75- watt light bulb is known to be normally distributed with sigma = 25 hours. A random sample of 100 bulbs has a mean life of x́ = 1014 hour construct a 95 % two-sided confidence interval on the mean life.
+```{r, results="hold", comment = NA}
+sigma = 25
+n = 100
+xbar = 1014
+
+z = 2*sigma/sqrt(n)
+
+```
+## Problem 8
+* State the null and alternative hypotheses to be used in testing the following claims and determine generally where the critical region is located:
+    Inspire...Educate...Transform.
+ 
+CSE 7315c _ Central Limit Theorem , Confidence Intervals and Hypothesis Testing
+ a. The mean snowfall at Lake George during the month of February is 21.8 centimeters
+b. No more than 20% of the faculty at the local university contributed to the annual giving fund
+```{r, results="hold", comment = NA}
+mu = 21.8
+
+
+```
+## Problem 9
+* Suppose a manufacturer claims that the mean lifetime of a light bulb is at least 10,000 hours. In a sample of 30 light bulbs, it was found that they only last 9,900 hours on average. Assuming the population standard deviation to be 120 hours, at 0.05 significance level, can we reject the claim by the manufacturer?
+
+**H0 : mean life >= 10000**
+
+**H1 : mean life < 10000**
+
+**Test Statistic : zee score**
+
+```{r, results="hold", comment = NA}
+xbar = 9900
+mu = 10000
+alpha = 0.05
+sigma = 120
+zl = qnorm(alpha)
+n = 30
+critical_value = qnorm(alpha)
+se = sigma/sqrt(n)
+z_calc = (xbar-mu)/se
+
+if (z_calc < zl) {
+  cat("\n Null Hypothesis is Rejected")
+} else {
+  cat("\n Accepted")
+}
+```
+## Problem 10
+* Suppose a car manufacturer claims a model gets 25 kmpl. A consumer group asks 30 owners of this model to calculate their kmpl and the mean value was 22 kmpl with a standard deviation of 1.5. Is the manufacturer's claim supported?
+**H0 : mileage >= 25
+
+H1 : mileage < 25
+
+Test Statistic : zee score **
+
+```{r, results="hold", comment = NA}
+mu = 25
+n = 30
+xbar = 22
+se = 1.5
+alpha = 0.05
+zl = qnorm(alpha)
+critical_value = qnorm(alpha)
+se = sigma/sqrt(n)
+z_calc = (xbar-mu)/se
+
+if (z_calc < zl) {
+  cat("\n Null Hypothesis is Rejected")
+} else {
+  cat("\n Accepted")
+}
+
+```
+## Problem 11
+* The CEO of a large electric utility claims that 80 percent of his 1,000,000 customers are very satisfied with the service they receive. To test whether his claim is true or false, the local newspaper surveyed 100 customers, using simple random sampling. Among the sampled customers, 73 percent say they are very satisfied. Based on these findings, can we reject the CEO's hypothesis that 80% of the customers are very satisfied? Use 90 % confidence level.
+
+**H0 : >800k sat
+
+H1 : <800k not
+
+Test Statistic : zee score **
+
+```{r, results="hold", comment = NA}
+n = 100
+alpha = 0.1
+xbar = 0.73
+zl = qnorm(alpha)
+critical_value = qnorm(alpha)
+se = sigma/sqrt(n)
+z_calc = (xbar-mu)/se
+
+if (z_calc < zl) {
+  cat("\n Null Hypothesis is Rejected")
+} else {
+  cat("\n Accepted")
+}
+```
+## Problem 12
+* A sample of 40 sales receipts from a grocery store has mean = $137 and standard deviation = $30. Use these values to test whether or not the mean is sales at the grocery store is less than $150. Using =0.05 significance level
+
+**H0 : mean store sales <$150 
+H1 : mean store sales > 150
+Test Statistic : zee score **
+```{r}
+n=40
+xbar = 137
+n = 100
+alpha = 0.05
+se = 30
+zl = qnorm(alpha)
+critical_value = qnorm(alpha)
+
+z_calc = (xbar-mu)/se
+
+if (z_calc < zl) {
+  cat("\n Null Hypothesis is Rejected")
+} else {
+  cat("\n Accepted")
+}
+
+```
+## Problem 13
+* A simple random sample of 10 people from a certain population has a mean age of 27. Can we conclude that the mean age of the population is not 30? The variance is known to be 20. Let = .05. Find a 95% confidence interval for the mean
+**H0 : mean age != 30 
+H1 : mean age == 30
+Test Statistic : zee score **
+```{r, results="hold", comment = NA}
+#modifying n (from 10) to min. sample size
+n=30 
+xbar = 27
+Var = 20
+sigma = sqrt(Var)
+alpha = 0.05
+se = 30
+zl = qnorm(alpha)
+
+z_calc = (xbar-mu)/se
+
+critical_value = qnorm(alpha, lower.tail = F)
+marginOfError = critical_value *se
+cat("\n Margin of Error =", marginOfError)
+
+upper_interval = xbar + marginOfError
+lower_interval = xbar - marginOfError
+cat("\n lower_interval=", lower_interval)
+cat("\n upper_interval=", upper_interval)
+
+if (z_calc < lower_interval || z_calc > upper_interval  ) {
+  cat("\n Null Hypothesis is Rejected")
+} else {
+  cat("\n Accepted")
+}
+```

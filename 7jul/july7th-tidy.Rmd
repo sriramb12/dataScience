@@ -1,0 +1,37 @@
+---
+title: "July7th-tidy"
+author: "Sriram"
+date: "7/7/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, results='hold'}
+library(readxl)
+
+xlsheetDf <-read_excel(path = '/Users/bsriram/datasci/july/7jul/data/German-Credit.xlsx')
+setwd('/Users/bsriram/datasci/july/7jul/')
+movie_data <- read.csv('data/MovieRatings.csv')
+movie_data
+#install.packages('tidyr')
+head(movie_data)
+library(tidyr)
+spread(data = movie_data, key = 'Movie', value = 'Rating')
+#gather(movie_data)
+
+untidy<- table2
+head(table2)
+spread(table2, key= 'type', value = 'count')
+head(table4a)
+gather(table4a, "year", "cases", 2:3)
+
+library(dplyr)
+library(nycflights13)
+flights_data <- flights
+subsetdata <- select(flights_data, year:day, carrier)
+subsetdata
+filter(flights_data, month == 8, day == 2, carrier == 'UA', dep_time == 520)
+```

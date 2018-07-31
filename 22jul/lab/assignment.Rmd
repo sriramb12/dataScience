@@ -1,0 +1,310 @@
+---
+title: "Cluster Analysis on Crime Data"
+author: "Sriram B"
+date: "22 July 2018"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+**NOTE** Before starting this activity please remember to clear your environment.
+
+```{r}
+rm(list = ls(all=TRUE))
+```
+
+
+# Agenda 
+
+* Read the dataset
+
+* Data pre-processing
+
+* Explore the dataset
+
+* Hierarchical Clustering
+    - Cluster Visualizion and Evaluation
+
+* Kmeans Clustering
+    - Cluster Visualizion and Evaluation
+
+
+# Problem Description
+
+* In the following Unsupervised Learning activity, we try to cluster Crime demographics of US state (50 states) wise data.
+
+
+# Reading & Understanding the Data
+
+* Make sure the dataset is located in your current working directory
+
+```{r}
+# Use the setwd() function to get to the directory where the data is present
+crime_data <- read.csv('crime_data.csv', header = T)
+```
+
+
+* Use the str(), summary() functions to get a feel for the dataset.
+
+```{r}
+
+str(crime_data)
+
+summary(crime_data)
+
+
+```
+
+
+* The dataset has `r nrow(crime_data)` observations of `r ncol(crime_data)` variables
+
+* The column/variable names' are self explanatory
+
+```{r}
+
+#See the head and tail of the dataframe
+head(crime_data)
+
+tail(crime_data)
+
+```
+
+
+
+# Data Pre-processing
+
+* Identify the categorical and numerical attributes appropriately
+
+```{r}
+#Store all column names in variable called 'attr'
+attr <- colnames(crime_data)
+str(attr)
+
+#Store all categorical attributes in 'cat_Attr'
+cat_attr <- "State"
+
+#Now, how to find the numerical attributes?
+num_attr <- setdiff(attr, c(cat_attr, "State"))
+num_attr
+
+```
+
+* There are `r sum(is.na(crime_data))` missing values in dataset, let's impute them using the knnImputation() function
+
+
+* Attribute 'statename' is a categorical variable. Lets convert appropriately.
+
+```{r}
+
+crime_data$state <- as.factor(as.character(crime_data$State))
+
+#Now see the structure of the dataframe
+str(crime_data)
+
+```
+* Convert the names of the States to the row names, as this will later help us in visualising the clusters
+
+```{r}
+
+rownames(crime_data) <- crime_data$State
+
+```
+
+* Drop the 'State' column as it is now just redundant information
+
+```{r}
+#Make a copy of the dataframe for later use (mixed attributes)
+crime_data_copy <- crime_data
+crime_data <- crime_data[, -c(colnames(crime_data) %in% ("State"))]
+# (or)
+crime_data$State <- NULL
+```
+* There are no Categorical Attributes, so we need not 'dummify' any column
+* The data must be scaled, before measuring any type of distance metric as the variables with higher ranges will significantly influence the distance
+
+```{r}
+
+crime_data[, num_attr] <- scale(crime_data[,num_attr], center = T, scale = T)
+
+```
+# Data exploration
+
+* We can use the fviz_dist() function from the factoextra package, to visualize the distances between the observations
+
+```{r, fig.width=12, fig.height=8, messages = FALSE}
+#install.packages("factoextra")
+# if(!require(devtools)) install.packages("devtools")
+# devtools::install_github("kassambara/factoextra")
+
+library(factoextra)
+
+# Use the get_dist() function from the factoexrtra to calculate inter-observation distances
+distance <- get_dist(crime_data)
+
+# The fviz_dist() function plots a visual representation of the inter-observation distances
+fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+# The gradient argument, helps us define the color range for the distance scale
+```
+# Hierarchical Clustering  
+
+## 1. Only numerical attributes - distance measure as 'Euclidean'
+
+### Hierarchical Clustering procedure  
+
+* Let's now perform hierarchical clustering using the hclust() function, for which we'll first need to calculate the distance measures
+
+```{r}
+# We use the euclidean distance measure (all attributes are numerical now)
+distM <- dist(crime_data, method = "euclidean")
+#distG <- dist(crime_data, method = "gower")
+
+hc_fit <- hclust(distM, method = "ward.D2")
+#ward.D2 method - find the pair of clusters that leads to minimum increase in total within-cluster variance after merging
+```
+* We can display the dendrogram for hierarchical clustering, using the plot() function
+```{r, fig.height=8, fig.width=14}
+plot(hc_fit)
+#Plot clusters being surrounded by a border, using the rect.hclust() function
+rect.hclust(hc_fit, k = 6, border = "red")
+```
+* We can display the dendrogram for hierarchical clustering, using the plot() function
+```{r, fig.height=8, fig.width=14}
+plot(hc_fit)
+#Plot clusters being surrounded by a border, using the rect.hclust() function
+rect.hclust(hc_fit, k = 6, border = "red")
+```
+* Cut the tree to 6 clusters, using the cutree() function
+```{r}
+points_hc <- cutree(hc_fit, k = 6)
+# Store the clusters in a data frame along with the crime data
+crime_clusts_hc <- cbind(points_hc, crime_data)
+# Have a look at the head of the new data frame
+colnames(crime_clusts_hc)[1] <- "cluster_hc"
+head(crime_clusts_hc)
+```
+## 2. Mixed attributes - distance measure as 'gower'
+
+### Hierarchical Clustering procedure - mixed attributes
+
+* Let's now perform same hierarchical clustering using the hclust() function, for mixed datatypes
+
+```{r}
+#Scaling the numeric attributes
+crime_data_copy[,num_attr] <- scale(crime_data_copy[,num_attr],scale=T,center=T)
+
+#Calculating gower distance
+library(cluster)
+gower_dist = daisy(crime_data_copy,metric = "gower")
+head(gower_dist)
+class(gower_dist)
+
+#Now that you have the distance matrix, do the hclust()
+hc_fit_mixed <- hclust(gower_dist, method = "ward.D2")
+```
+
+* We can display the dendogram for hierarchical clustering, using the plot() function
+
+```{r, fig.height=8, fig.width=14}
+
+plot(hc_fit_mixed )
+
+```
+
+
+* Cut the tree to 6 clusters, using the cutree() function
+
+```{r}
+
+points_hc_mixed <- cutree(hc_fit_mixed , k = 6)
+
+# Store the clusters in a data frame along with the crime data
+crime_clusts_hc_mixed <- cbind(points_hc_mixed, crime_data)
+
+# Have a look at the head of the new data frame
+colnames(crime_clusts_hc_mixed)[1] <- "cluster_hc_mixed"
+
+head(crime_clusts_hc_mixed)
+
+```
+
+
+* Plot a new dendogram, with each of the clusters being surrounded by a border, using the rect.hclust() function
+
+```{r, fig.height=8, fig.width=14}
+
+plot(hc_fit_mixed)
+
+rect.hclust(hc_fit_mixed, k = 5, border = "red")
+
+```
+
+# K-Means Clustering
+
+## K-Means Clustering procedure
+
+* Build a basic kmeans model with k = 2, using the kmeans() function
+
+```{r}
+
+set.seed(144423)
+
+#km_basic <- kmeans(crime_data, centers = 2, nstart = 20)
+
+#fviz_cluster(km_basic, crime_data)
+library(knitr)
+knit_exit()
+```
+* The kmeans() function returns a list of 9 objects which include the cluster assignments ("cluster"), cluster centers ("centers"), etc. You can further explore the returned object by calling the str() function on the returned object and going through the documentation
+
+
+* Let's now build a screen plot to choose a "k"
+
+```{r}
+# Initialize wss to 0
+#wss <- 0
+#set.seed(2344)
+# From 1 upto upto 10 cluster centers, fit the kmeans model
+#for (i in 1:10) {
+#  cfit <- kmeans(crime_data, centers = i, nstart = 20)
+  # Store the sum of within sum of square
+#  wss[i] <- sum(cfit$withinss)
+#}
+
+plot(1:10, wss, type = "b")
+
+fviz_nbclust(crime_data, kmeans, method = "wss")
+
+```
+
+
+
+* Let's choose k as 6 and cluster the data
+
+```{r}
+set.seed(12344)
+km_clust <- kmeans(crime_data, 6)
+
+# after choosing k as 6, let's store the cluster groupings along with the data in a new data frame
+km_points <- km_clust$cluster
+
+# Store the cluster assignments in a new data frame
+crime_clusts_km <- as.data.frame(cbind(km_clust$cluster, crime_data))
+
+# Look at the head of the data
+head(crime_clusts_km)
+
+colnames(crime_clusts_km)[1] <- "cluster_km"
+```
+
+
+
+* We can visualise the clusters by plotting the data using the fviz_cluster() function which plots the points on the first two principal components
+
+```{r, fig.height=8, fig.width=14}
+
+fviz_cluster(km_clust, crime_data)
+
+```
+

@@ -1,0 +1,105 @@
+* We can display the dendogram for hierarchical clustering, using the plot() function
+
+```{r, fig.height=8, fig.width=14}
+
+plot(hc_fit_mixed )
+
+```
+
+
+* Cut the tree to 6 clusters, using the cutree() function
+
+```{r}
+
+points_hc_mixed <- cutree(hc_fit_mixed , k = 6)
+
+# Store the clusters in a data frame along with the crime data
+crime_clusts_hc_mixed <- cbind(points_hc_mixed, crime_data)
+
+# Have a look at the head of the new data frame
+colnames(crime_clusts_hc_mixed)[1] <- "cluster_hc_mixed"
+
+head(crime_clusts_hc_mixed)
+
+```
+
+
+* Plot a new dendogram, with each of the clusters being surrounded by a border, using the rect.hclust() function
+
+```{r, fig.height=8, fig.width=14}
+
+plot(hc_fit_mixed)
+
+rect.hclust(hc_fit_mixed, k = 5, border = "red")
+
+```
+
+# K-Means Clustering
+
+## K-Means Clustering procedure
+
+* Build a basic kmeans model with k = 2, using the kmeans() function
+
+```{r}
+
+set.seed(144423)
+
+km_basic <- kmeans(crime_data, centers = 2, nstart = 20)
+
+fviz_cluster(km_basic, crime_data)
+
+```
+
+
+* The kmeans() function returns a list of 9 objects which include the cluster assignments ("cluster"), cluster centers ("centers"), etc. You can further explore the returned object by calling the str() function on the returned object and going through the documentation
+
+
+* Let's now build a screen plot to choose a "k"
+
+```{r}
+# Initialize wss to 0
+wss <- 0
+set.seed(2344)
+# From 1 upto upto 10 cluster centers, fit the kmeans model
+for (i in 1:10) {
+  cfit <- kmeans(crime_data, centers = i, nstart = 20)
+  # Store the sum of within sum of square
+  wss[i] <- sum(cfit$withinss)
+}
+
+plot(1:10, wss, type = "b")
+
+fviz_nbclust(crime_data, kmeans, method = "wss")
+
+```
+
+
+
+* Let's choose k as 6 and cluster the data
+
+```{r}
+set.seed(12344)
+km_clust <- kmeans(crime_data, 6)
+
+# after choosing k as 6, let's store the cluster groupings along with the data in a new data frame
+km_points <- km_clust$cluster
+
+# Store the cluster assignments in a new data frame
+crime_clusts_km <- as.data.frame(cbind(km_clust$cluster, crime_data))
+
+# Look at the head of the data
+head(crime_clusts_km)
+
+colnames(crime_clusts_km)[1] <- "cluster_km"
+```
+
+
+
+* We can visualise the clusters by plotting the data using the fviz_cluster() function which plots the points on the first two principal components
+
+```{r, fig.height=8, fig.width=14}
+
+fviz_cluster(km_clust, crime_data)
+
+```
+

@@ -1,0 +1,463 @@
+---
+title: "R Basics Part 2"
+author: "INSOFE"
+date: "2 June 2018"
+output: 
+  html_document:
+    toc : true
+    toc_float : true
+    toc_depth : 5
+---
+# Basic Preprocessing steps in R
+## Agenda 
+* Setting the Working Directory and knowing the Current working Directory
+* Reading data from a csv file and Creating a Data Frame 
+* Head and Tail functions
+* Getting the Column names and row names
+* Renaming the Columns
+* Checking the data types of columns - is.* and str functions
+* Converting the data into required data types - as.* function
+* Subsetting the Data Frame 
+* Checking for the missing values
+* Imputing the missing values - Central Imputation
+* Creating a new column -- Power to Weight ratio
+* Numerical to Categorical - Binning
+* Categorical  to Numerical - Dummifying
+* Scaling the Numerical Attributes
+* Creating Functions
+* Using the apply family 
+* Reading data from two files and merging 
+
+## Present Working Directory -- getwd()
+```{r}
+# getwd()
+```
+### Setting the working directory -- setwd()
+```{r}
+# setwd()
+```
+
+## Reading data from a csv file and Creating a Data Frame
+   - Dataset mtcars is shared in the form of a .csv fil, we will read this in to R evnironment
+```{r}
+mtcars = read.csv(file = "mtcars.csv",header=TRUE,sep=",")
+
+class(mtcars)
+```
+
+#### Data set information 
+  
+  The mtcars dataset was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 
+  10 aspects of automobile design and performance for 32 automobiles (1973–74 models).."The data concerns 
+  city-cycle fuel consumption in miles per gallon."
+
+#### Description of the Attributes 
+
+-	mpg	Miles/(US) gallon
+-	cyl	Number of cylinders
+-	disp	Displacement (cu.in.)
+-	hp	Gross horsepower
+-	drat	Rear axle ratio
+-	wt	Weight (1000 lbs)
+-	qsec	1/4 mile time
+-	vs	Engine (V-shaped,straight)
+-	am	Transmission (0 = automatic, 1 = manual)
+-	gear	Number of forward gears
+-	carb	Number of carburetors
+
+
+## Head and Tail functions
+
+### Let's take a look at top rows of the dataframe
+```{r}
+head(mtcars)
+```
+
+### Let's take a look at the bottom rows  of the dataframe
+```{r}
+tail(mtcars)
+```
+
+## Getting the Column names and row names
+
+### Column names
+```{r}
+colnames(mtcars)
+```
+### Row names
+```{r}
+rownames(mtcars)
+```
+
+## Renaming the  Rows and Columns
+### Renaming the rows
+```{r}
+rownames(mtcars) = mtcars$X
+rownames(mtcars)
+mtcars$X=NULL
+mtcars
+```
+
+###  Renaming the  Columns
+```{r}
+colnames(mtcars)[6] = "weight"
+```
+
+## Checking the data types of columns - is.* and str functions
+### Data type of the Column 
+```{r}
+# Data type of the Column checked by is.* will return in a logical vector of length 1
+is.numeric(mtcars$Cars)
+is.character(mtcars$hp)
+```
+
+### Data types of the Columns in the entire data set
+```{r}
+str(mtcars)
+```
+## Converting the data into required data types - as.* function
+```{r}
+
+mtcars$cyl = as.factor(mtcars$cyl)
+# converting am column to factor 
+mtcars$am = as.factor(mtcars$am)
+
+```
+
+##  Subsetting the Data Frame
+### Subsetting based on column names
+#### Subsetting based on a single column by name
+```{r}
+mtcars[,'carb']
+
+```
+#### Subsetting based on a single column by column number (also referred to as column index)
+```{r}
+mtcars[,11]
+
+```
+#### Subsetting based on a two or more columns based on column name
+- Observe the class of the object returned in both the cases 
+```{r}
+mtcars[,c('mpg','carb')]
+```
+#### Subsetting based on a two or more columns based on column index number
+
+```{r}
+
+mtcars[,c(1,11)]
+class(mtcars[,c(1,11)])
+
+```
+
+#### Subsetting based on index row name
+```{r}
+rownames(mtcars)
+mtcars['Duster 360',]
+class(mtcars['Duster 360',])
+```
+#### Subsetting based on index row number
+```{r}
+mtcars[7,]
+class(mtcars[7,])
+```
+
+#### Subsetting based on multiple index values 
+```{r}
+mtcars[c(6,7),]
+class(mtcars[c(6,7),])
+```
+#### Subsetting using the subset function
+```{r}
+#Subsetting data
+s1 <-subset(mtcars,select=c(cyl,mpg))
+s1
+```
+
+#### Subsetting based on multiple index values and column names
+```{r}
+mtcars[c('Duster 360','Valiant'),c('mpg','hp')]
+class(mtcars[c('Duster 360','Valiant'),c('mpg','hp')])
+```
+
+
+#### Subsetting based on multiple index values and column names
+
+```{r}
+mtcars[c(6,7),c(1,2)]
+class(mtcars[c(6,7),c(1,2)])
+```
+
+## Checking for the missing values
+### Checking by using the for loop and *is.na* fuction
+```{r}
+colsum=c()
+for (i in colnames(mtcars))
+{
+  sum = 0
+  for (j in mtcars[,i])
+  {
+    if(is.na(j)==TRUE)
+    {
+      sum = sum+1
+    }else
+    {
+      sum = sum
+    }
+  }
+  colsum[i] = sum
+}
+
+colsum
+```
+
+### Checking by using the colSums
+```{r}
+colSums(is.na(mtcars))
+```
+
+### Getting the Sum of the total NA values in the Dataset
+```{r}
+sum(is.na(mtcars))
+```
+
+## Imputing the missing values - Central Imputation
+```{r}
+library(DMwR)
+mtcars_imputed  = centralImputation(mtcars)
+colSums(is.na(mtcars_imputed))
+```
+
+## Creating a new feature power to weight ratio
+- creating a new feature and adding it to the existing dataframe
+
+```{r}
+mtcars_imputed$pwr <-mtcars_imputed$hp/mtcars_imputed$weight 
+head(mtcars_imputed)
+```
+
+
+## Numerical to Categorical - Binning
+### Manual binning
+```{r}
+mtcars_imputed $hp
+# After looking the numbers we can get the idea of how to bin them 
+bins = cut(mtcars_imputed $hp,breaks = seq(0,500,20),include.lowest = T,right = T)
+bins
+# Count the number of rows that comes under a particular bin
+table(bins)
+
+```
+
+### Use the *discretize* function from infotheo package
+```{r}
+library(infotheo)
+(nbins = floor(sqrt(NROW(mtcars_imputed $hp))))
+discretize(mtcars_imputed $hp,disc = "equalwidth",nbins)
+```
+
+```{r}
+discretize(mtcars_imputed $hp,disc = "equalfreq",nbins)
+```
+
+```{r}
+str(mtcars_imputed)
+```
+
+## Categorical to Numerical 
+
+```{r}
+library(dummies)
+dummy(mtcars_imputed$vs)
+```
+
+## Scaling the Numerical Attribute
+```{r}
+library(vegan)
+mtcars_imputed_standardized <- decostand(x =mtcars_imputed[,c('mpg','disp','drat','weight','qsec','gear','carb')],method ="range",MARGIN = 2)
+str(mtcars_imputed_standardized)
+range(mtcars_imputed_standardized$mpg)
+```
+
+## Functions in R
+  - Function syntax
+   funcName <- function (argument) {
+     statements
+   }
+   
+#### Define and Call a function 
+- paste function is used for string concatenation and string formatting for the statements we print on console
+```{r}
+pow <- function(x, y = 3) #Default Values for y Arguments
+  {
+  result <- x^y
+  print(paste(x, "raised to the power", y, "is", result))
+}
+pow(3)
+```
+
+
+```{r}
+pow(3) # takes the default y value
+
+pow(8, 2) # we can pass the arguments , r considers them in the same order and passes them in the place of prameters
+
+pow(x = 8, y = 2) # Named Arguments 
+
+pow(y = 2, x = 8)
+```
+
+#### R Return Value from Function
+```{r}
+check = function(x) {
+  if (x > 0) {
+    result <- "Positive"
+  }
+  else if (x < 0) {
+    result <- "Negative"
+  }
+  else {
+    result <- "Zero"
+  }
+  return(result)
+}
+
+check(1)
+```
+
+
+#### Functions without return()
+```{r}
+# If there are no explicit returns from a function, the value of the last evaluated expression is returned automatically in R.
+
+check <- function(x) {
+  if (x > 0) {
+    result <- "Positive"
+  }
+  else if (x < 0) {
+    result <- "Negative"
+  }
+  else {
+    result <- "Zero"
+  }
+  result
+}
+
+check(-1)
+
+```
+
+
+#### Multiple Returns
+- The return() function can return only a single object. If we want to return multiple values in R, we can use a list (or other objects) and return it.
+
+```{r}
+multiReturn = function() {
+  myList <- list(1, 20, c("a","b"))
+  return(myList) 
+}
+
+multiReturn()
+```
+
+## Family of *apply* functions 
+- We can do some very complex operations with using the se handy functions from the *apply* family of functions
+- apply functions take a list/vector or dataframe as input, apply a function on the input and produce the output, let us look a some of the apply functions and how to use them.
+
+#### *lapply*
+- lapply takes a list as an input, and returns a list as the output.
+
+- syntax :  lapply(X,FUN)
+
+
+
+#### mean function on a column in the dataframe  mtcars
+```{r}
+lapply(mtcars['mpg'],mean)
+class(lapply(mtcars['mpg'],mean))
+```
+
+
+#### *sapply*
+- sapply takes a list as an input, and returns a vector as output.
+
+- syntax :  sapply(X,FUN)
+
+#### min and max function on a column in the dataframe  mtcars
+```{r}
+sapply(mtcars['mpg'],max)
+class(sapply(mtcars['mpg'],max))
+```
+
+#### *tapply*
+- tapply splits the array based on specified data, usually factor levels and then applies the function to it.
+
+- syntax :  tapply(X,Y,FUN)
+- tapply splits X based on levels in Y
+
+
+#### mean function on a column in the dataframe  mtcars
+```{r}
+str(mtcars)
+```
+
+```{r}
+tapply(mtcars$weight, mtcars$cyl, mean)
+```
+
+#### Find the max hp of cars based on number of cylinder
+```{r}
+tapply(mtcars$hp,mtcars$cyl,max)
+```
+
+#### *apply*
+- apply takes input
+  - 1. Dataframe
+  - 2. An argument which specfies if we want to apply the funtions row wise or column wise and
+  - 3. The function we want to apply
+
+- syntax :  apply(X,1 (or 2) ,FUN)
+  - 1 for rows
+  - 2 for columns
+
+
+
+#### apply the max function on rows
+```{r}
+colnames(mtcars_imputed)
+colnames(mtcars_imputed[,-c(1)])
+mtcars_imputed[,-c(1)]
+apply(mtcars_imputed[,-c(1)],1,max)
+```
+#### apply the mean  and max function on columns
+```{r}
+apply(mtcars_imputed[,-c(1)],2,max)
+apply(mtcars_imputed[,-c(1)],2,max)
+class(apply(mtcars_imputed[,-c(1)],2,max))
+```
+
+
+
+## Reading Data from two files and merging the data
+
+```{r}
+cust_bank_details = read.table("Customer_Bank Details_MV.csv",sep = ",",header = T)
+cust_demographics = read.table("Customer_Demographics_MV_DOB.csv",sep = ",",header = T)
+```
+
+```{r}
+head(cust_bank_details)
+```
+
+```{r}
+colnames(cust_demographics)[1] = "ID"
+head(cust_demographics)
+```
+
+#### Combining/Merging/Joining data from multiple files.
+
+```{r}
+library(data.table)
+merged_df = merge(cust_bank_details,cust_demographics,by.x="ID",by.y = "ID")
+head(merged_df)
+```

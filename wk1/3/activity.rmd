@@ -1,0 +1,9 @@
+---
+title: "Week2 Activity"
+author: Sriram
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+

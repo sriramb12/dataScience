@@ -1,0 +1,192 @@
+---
+title: "Association rules"
+author: "INSOFE Lab"
+date: "28 July, 2018"
+output: html_document
+---
+
+## Data preprocessing 
+
+Clearing environment variables
+```{r}
+rm(list=ls(all=TRUE))
+
+``` 
+
+Loading required libraries
+
+```{r}
+# install.packages('arules')
+library(arules)
+
+```
+
+Data loading
+
+```{r}
+data("Groceries")
+Groceries
+head(Groceries)
+
+# Groceries <- read.transactions(file.choose())     # Read transactions from file
+
+# Writing Groceries Transaction data to csv file
+# Groceries_new <- as(Groceries,"data.frame")
+# write.csv(Groceries_new, file = "Groceries.csv",row.names = TRUE)
+
+```
+
+Viewing the data
+
+```{r}
+# Groceries@itemInfo
+inspect(Groceries[1:10])
+
+```
+
+Summarizing the data in transaction table
+
+``` {r}
+summary(Groceries)
+#df=data.frame(Groceries)
+#head(df)
+```
+
+Looking at the item frequency
+
+``` {r}
+itemFrequency(x = Groceries, type = "absolute")
+
+```
+
+```{r}
+itemFrequency(x = Groceries, type = "relative")
+
+```
+
+Plotting the item frequency for top 15 items
+
+```{r, fig.width=6}
+itemFrequencyPlot(x = Groceries, topN = 20, type="relative")
+
+```
+
+## Mining rules/pattern
+You will always have to pass the minimum required support/confidence or both
+
+We set the minimum support to 0.001 and minimum confidence of 0.8
+
+Get the rules :
+
+```{r}
+rules <- apriori(Groceries, parameter = list(supp = 0.001, conf = 0.8), control = list(verbose = F))
+length(rules)
+
+```
+
+Inspecting top 5 rules by rounding off all the numerical values to 2 digits in the output
+
+```{r}
+getOption("digits")
+options(digits = 2)
+inspect(rules[1:5])
+```
+
+Reading the pattern is now easier.
+for e.g. : If someone buys yogurt and cereals, they are 81% likely to buy Whole milk too.
+
+We can get summary information about the rules that give us some interesting information such as:
+* The number of rules generated: 410
+* The distribution of rules by length: Most rules are 4 items long
+* The summary of quality measures: interesting to see ranges of support, lift, and confidence.
+* The information on the data mined: total data mined, and minimum parameters.
+
+```{r}
+summary(rules)
+
+```
+
+when we have large set of rules then we would prefer to sort the rules based on requirement and take decision using top rules
+
+Let's say we wanted to have the most likely rules, we can easily sort out the rules by confidence in descending order by using following piece of code
+
+```{r}
+sorted_rules <- sort(rules, by = "confidence" ,decreasing = T)
+inspect(sorted_rules[1:5])
+
+```
+## Visualization 
+* Visualizing the rules using a graph
+
+```{r, fig.width=16, fig.height=12}
+
+sorted_rules <- sort(rules, by = "support" ,decreasing = T)
+inspect(sorted_rules[1:5])
+
+library(arulesViz)
+plot(sorted_rules[1:5], method = "graph", shading = NA, interactive = F)
+
+```
+
+Perhaps "sometimes rules with length greater than 3 may not be interesting for client"
+Let's say we want more concise rules with length not exceeding 3, which can be easily achieved by adding "maxlen" parameter to the apriori function.
+
+```{r}
+rules_maxlen3 <- apriori(data = Groceries, parameter = list(supp = 0.001, conf = 0.8, maxlen = 3), control = list(verbose = F)) 
+inspect(rules_maxlen3)
+
+```
+
+Redundancies 
+
+* Rules might be repeating with different combinations with similar support and confidence values e.g. {A,B} -> {C}, {A,C} -> {B}
+* every subset of a frequent itemset is also frequent (Downward closure property)
+
+We can check and remove the redundant rules by using below code snippet
+```{r}
+sum(is.redundant(sorted_rules))
+sorted_unique_rules <- sorted_rules[!is.redundant(sorted_rules)]
+sum(is.redundant(sorted_unique_rules))
+
+sum(is.redundant(rules_maxlen3))
+```
+
+## Targetting items
+
+Now that we know to generate rules and limit the output.
+
+Let's say we want to target items and generate rules.
+
+Two types of targets which the client might be interested in, let us explore those by using an example of "whole milk"
+* What are customer likely to buy before buying "whole milk"
+* What are customer likely to buy if they purchase "whole milk"
+
+essentially you are asking will i be able to set my lhs, rhs or both in my rules?
+
+well! Lets look at the first target condition
+** What are customer likely to buy before buying "whole milk" **
+```{r}
+target_rules1 <- apriori(data = Groceries, parameter = list(supp = 0.001, conf = 0.8, minlen = 2), appearance = list(rhs = "whole milk"), control = list(verbose = F))
+
+sorted_target_rules1 <- sort(target_rules1, by = "confidence", decreasing = T)
+inspect(sorted_target_rules1[1:10])
+```
+
+** What are customer likely to buy if they purchase "whole milk" **
+```{r}
+target_rules2 <- apriori(data = Groceries, parameter = list(supp = 0.001, conf = 0.15, minlen = 2), appearance = list(lhs = "whole milk"), control = list(verbose = F))
+
+sorted_target_rules2 <- sort(target_rules2, by = "confidence", decreasing = T)
+inspect(sorted_target_rules2)
+length(sorted_target_rules2)
+```
+
+## Visualization
+
+* Visualizing the rules using a graph
+
+```{r, fig.width=16, fig.height=12}
+
+plot(sorted_target_rules2[1:6], method = "graph", shading = NA, interactive = F)
+
+```

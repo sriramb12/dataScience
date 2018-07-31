@@ -1,0 +1,119 @@
+---
+title: "Simple Linear Regression"
+author: "INSOFE Lab"
+date: "8th July, 2018"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+## Simple Linear Regression Model
+
+* Clear environment variables
+
+```{r}
+rm(list=ls(all=TRUE))
+
+```
+
+## Read or load data
+* Set working Directory and read the data from csv file
+```{r}
+
+#setwd("/home/seemabasantani/Seema Basantani/Academics/Batch44/CSE 7302c/Batch 44 - CSE 7302c/Simple Linear Regression")
+setwd("/Users/bsriram/datasci/july/8jul/data")
+cars_data = read.csv(file="cars.csv", header=T)   # Read the data from cars.csv file
+
+```
+
+* Summary of the data and look for any missing values:
+
+```{r}
+
+names(cars_data)      # Display the column names
+str(cars_data)        # Structure of the dataset
+summary(cars_data)    # Summary of the dataset
+
+```
+
+* No missing values
+
+## Scatter Plot
+```{r}
+plot(cars_data$speed,cars_data$dist,xlab="Speed in miles per hour",ylab="Distance in feet",main="Stopping Distance Vs. Speed", col= "blue") # Plot the dependent and independent variables
+
+```
+
+## Covariance between the attributes
+```{r}
+
+cov(cars_data)      # Covariance between independent and dependent variable
+
+```
+* The covariance of the speed of the car and distance is 109.9469
+
+## Correlation between the attributes
+
+```{r}
+cor(cars_data$speed, cars_data$dist)      # Correlation between independent and dependent variable
+
+```
+
+
+* The correlation coefficient of the Speed of car and Distance is 0.8068949. 
+* Since the value is close to 1 and has a +ve sign, we can conclude that the variables are positively correlated.
+
+## Building the Linear Regression Model
+* lm function is used to fit linear models
+ 
+```{r}
+
+LinearReg = lm(dist ~ speed+speed^2, data = cars_data)
+coefficients(LinearReg)
+help(lm)
+```
+
+### Read the model summary
+
+```{r}
+## Summary of the linear model:
+summary(LinearReg)
+
+```
+
+
+### Line of Best Fit
+
+```{r}
+plot(cars_data$speed,cars_data$dist,xlab="Speed in miles per hour",ylab="Distance in feet",main="Stopping Distance Vs. Speed: Best fit line", col= "blue")
+abline(LinearReg,col="steelblue",lty=1,lwd=4)       # The function adds straight line to a plot
+
+```
+
+## Extracting residuals and fitted values
+
+```{r}
+
+# To extract the residuals:
+LinearReg$residuals
+
+# To extract the predictions
+LinearReg$fitted.values
+
+```
+
+## Validity of linear regression assumptions
+
+```{r}
+
+par(mfrow = c(2,2))
+plot(LinearReg)           # Check for validity of linear regression assumptions
+par(mfrow = c(1,1))       # Resetting the plot layout
+
+```
+
+
+
+

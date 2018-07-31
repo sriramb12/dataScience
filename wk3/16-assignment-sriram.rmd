@@ -1,0 +1,173 @@
+---
+title: "Assignmen16-June-2018"
+author: "Sriram Bhamidipati"
+date: "6/16/2018"
+output: html_document
+---
+
+**Q2 For a given probability density function, calculate**
+
+i. P(X=2)
+Answer: 0 
+
+```{r}
+f= function(x){
+3*x^(-4)
+}
+```
+ii. P(x<=4)
+```{r}
+f1= integrate(f, lower =1, upper = 4)
+f1
+```
+ii. P(X<1)
+```{r}
+f2= integrate(f, lower =2, upper = 3)
+f2
+```
+
+
+**Q3**. Twelve volunteers were chosen for a blind-fold test to taste 2 soft-drinks A & B. What is the probability that 3 of them were able to correctly identify the drink that they had?**
+#Binomial distro with n=12, p=0.5 and q = (1-p) = 0.5
+# P(X=r)  = nCr * (p)^r  * q^(n-r)
+```{r}
+dbinom(3, 12, 0.5)
+```
+What is the P(x >= 3) : Atleast 3 were correctly identify
+```{r}
+1-pbinom(2, 12, 0.5)
+sum(dbinom(3:12, 12, 0.5))
+
+```
+**Q4. Consider the favorite coin toss experiment. If you toss a biased coin, the probability of obtaining heads is 0.6. If you toss the coin 10 times, what is the probability of getting heads exactly 4 times?**
+# P(X=r)   = nCr * p^r * q^(n-r)
+```{r}
+choose(10,4) *0.6^4 * 0.4^6
+dbinom(4,10, 0.6)
+```
+**Q5. Customers arrive at a bus station at the rate of 5 per minute following Poisson distribution. What is the probability of 3 arrivals in a one-minute interval?**
+###Ans:
+Given lambda = 5
+P(X = r) = (e^(-lambda) * lambda^r)/ r!
+```{r}
+l=5
+r= 3
+(exp(-l) * l^3)/ factorial(r)
+
+dpois(3,5)
+```
+**6. The number of calls coming per minute into a hotel reservation center is Poisson random variable with mean 3. Find the probability that no call come in a given 1 minute period.**
+# P(X+Y > =2)  = 1 - [P(X+Y=0) +  P(X+Y=1)]
+```{r}
+1- (exp(-6) + exp(-6) *(6^1))/factorial(1)
+1-ppois(q=1, lambda = 6)
+```
+**7. You are fond of a particular flavor of ice-cream but that is rarely available in the shop. The probability of getting that ice-cream is only 0.15. Obtain a distribution table for getting ice - cream in 1,2,.....,10 visits and generate a plot. What would we observe if x values grow larger?**
+```{r}
+p=0.15
+#P(X=1)  (1-q)
+geomDist = dgeom(x = 0:9, prob = 0.15)
+barplot(geomDist, col = 'grey', xlab = 'Nu of trials', ylab = 'Probability')
+
+```
+How many visits on an average are required to get your favorite ice-cream?
+```{r}
+as.integer(ceiling(1/p))
+```
+**8. If a production line has 20% defective rate. Calculate the probability of obtaining the first defective part after three good parts. What is the average number of inspections to obtain the first defective?**
+
+# Geometric Distrib
+ P(defective part) = p = 0.2
+ P(x = 4)  = q^3 *p
+```{r}
+q=0.8
+p=0.2
+P = (0.8)^3 * 0.2
+dgeom(3, p)
+```
+**9. The time required to repair a machine is an exponential random variable with rate λ = 0.5 jobs/hour.a) What is the probability that a repair time exceeds 2 hours?**
+```{r}
+f = function(t)
+{
+  lam=0.5
+  lam*exp(-lam*t)
+}
+
+res = integrate(f, lower = 0, upper = 2)
+1-res$value
+
+1-pexp(q =2, 0.5)
+#OR
+pexp(q=2, rate = 0.5, lower.tail = FALSE)
+```
+
+#Normal Distribution
+**Q10. Player A scores an average of 70 runs with SD of 20 runs. Player B scores an average of 40 runs with SD of 10 runs. In a particular game, player A scored 75 runs and player B scored 55 runs. Which of these two players have done better when compared to their own personal track records? Also mention the better player's z-score.**
+```{r}
+muA=70
+sdA=20
+muB=40
+sdB=10
+x = 75
+y = 55
+zeeA= (x - muA)/sdA
+zeeB= (y - muB)/sdB
+zeeA
+zeeB
+if (zeeA > zeeB) {
+  print("A is better player")
+} else
+{
+  print("A is better player")
+}
+```
+**Q11. A college basketball team has a shortage of one team member and the coach wants to recruit a player. To be selected for training the minimum height for recruitment is 72 inches. The average height of the students is 67.2 inches with a variance of 29.34. What is the probability that the coach finds a player from that college?**
+```{r}
+minRq = 72
+mu = 67.2
+vrnce = 29.34
+sd = sqrt(vrnce)
+zee = (minRq - mu)/sd
+# P ( X < 72) = P(Z = 0.88) = 0.811
+# P( X >= 72) = 1 - 0.811 = 0.189
+
+1-pnorm(zee)
+```
+**Q12. A certain type of light bulb has an average life of 500 hours, with a standard deviation of 100 hours. The life of the bulb can be closely approximated by a normal curve. An amusement park buys and installs 10,000 such bulbs. Find the probability of a bulb to last for each period of time.**
+```{r}
+mu = 500
+sd = 100
+
+n= 10000
+```
+**Qa. At least 750 hours**
+```{r}
+minRq = 750
+z = (minRq - mu)/sd
+1-pnorm(z)
+#Or
+1-pnorm(z)
+```
+**Qb. Less than equal to 500 hours**
+```{r}
+pnorm(500, 500, 100)
+```
+**Qc. Between 350 and 550 hours**
+```{r}
+pnorm(500, 550, 100)
+```
+**Q13.At what point (x) is the area under the curve to the left of x equal to 0.5? At what point (x) is the area under the curve to the left of x equal to 0.95? At what point (x) is the area under the curve to the left of x equal to 0.995?**
+```{r}
+qnorm(0.5)
+qnorm(0.95)
+qnorm(0.995)
+```
+**Q14. Compute Z score for the elements in the vector below - 82, 72, 85, 14, 66, 15, 23, 78, 16, 38, 92, 17**
+```{r}
+df=data.frame("element" = c(82, 72, 85, 14, 66, 15, 23, 78, 16, 38, 92, 17))
+mu= mean(df$element)
+sigma= sd(df$element)
+
+df$zee = apply(df, 2, function(x) {(x - mu)/sigma})
+df
+```

@@ -1,0 +1,94 @@
+---
+title: "Activity-june-9"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+```{r echo=FALSE}
+rm(list=ls())
+setwd('/Users/bsriram/datasci/june/wk2/stats')
+```
+
+## Activity -1
+ 	A company has 10 employees and their average salary is 1 lakh per annum. Now they have recruited a CEO who salary is normally very high. Which of the following measure of central tendencies will be impacted
+   **a.	Median**
+   b.	Mode
+   c.	Mean
+
+### Answer: **Median**
+
+## Activity -2
+	Here is the data of experience of individuals in a CPEE class. We have grouped individuals into 6 groups and here is the data. Compute the average and median values for each group and list your observations.
+
+### Answer:
+```{r echo=FALSE}
+
+experience = read.table("group.csv",sep = ",",header = T, na.strings=c('NA','?'))
+```
+
+###Questions:
+1.	What is the average in each group?
+```{r echo=FALSE}
+mean(experience)
+```
+2.	What is the median in each group?
+```{r echo=FALSE}
+```
+3.	What is the average experience across all groups?
+```{r echo=FALSE}
+```
+4.	Does the average of the each group average experience is same as the Grand average ?
+```{r echo=FALSE}
+```
+
+
+## Activity -3
+
+```{r echo=FALSE}
+library(modes)
+
+deliverySvcs = read.table("deliveryserivces.csv",sep = ",",header = T, na.strings=c('NA','?'))
+#print(deliverySvcs)
+
+stats = function(x)
+{
+   res = c("mean" = mean(x),
+   "med" = median(x),
+   "q1" = quantile(x)[2],
+   "q2" = quantile(x)[3],
+   "q3" = quantile(x)[4],
+   "min" = range(x)[1],
+   "max" = range(x)[2],
+   "iqr" = IQR(x),
+   "var" = var(x),
+   "sd" = sd(x))
+   return(res)
+}
+
+apply(deliverySvcs, 2,stats)
+```
+
+## 6.	Analyze the performance of a class 
+```{r echo=FALSE}
+ Scores<-c( 11, 7.5, 8.5, 10, 10, 10.5, 5.5, 10, 9, 9.5, 5.25, 8, 6.5, 10.5, 8.75, 0, 6, 6,  6.75,8.75, 0, 9.5, 7.5, 8.5, 7)
+
+stats(Scores)
+boxplot(Scores)
+
+plot
+```
+a.	How is the spread of the scores? Compute range, variance & standard deviation
+b.	Find the 25th percentile, 50th percentile and 75 percentiles for this data
+c.	Find the Q1, Q2 and Q3 and IQR for this data.
+d.	Find outliers, if any. Do a boxplot to visualize the same.
+
+```{r}
+Supplier1 <-c(17,22,22,22,27)
+Supplier2<-c(17,19,20, 27,27)
+
+stats(Supplier1)
+stats(Supplier2)
+```

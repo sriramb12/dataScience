@@ -1,0 +1,148 @@
+---
+title: "Lab"
+author: "Sriram"
+date: "6/23/2018"
+toc: true
+output: html_document
+---
+setwd('/Users/bsriram/datasci/june/wk4')
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm (list = ls(all= TRUE))
+```
+
+
+##Suppose you want to check whether a coin is biased or unbiased with the following hypothesis.
+Ho:p=0.5 vsH1=0.8
+Questions:
+where p is the probability of head in a single toss of a coin. You have decided that if you find more than 7 heads in 10 tosses, you will reject the null hypothesis.
+
+```{r, results="hold", comment = NA}
+rm (list = ls(all= TRUE))
+Alpha = dbinom(8, 10, 0.5) + dbinom(9, 10, 0.5) + dbinom(10, 10, 0.5)
+#Or
+Alpha = sum(dbinom(8:10, 10, 0.5))
+Alpha
+#Or
+Alpha = 1-dbinom(7, 10, 0.5)
+
+```
+
+What is Type-I error of your test ? What is the Type-II error ?
+```{r, results="hold", comment = NA}
+rm (list = ls(all= TRUE))
+```
+What is the power of your test ?
+```{r, results="hold", comment = NA}
+rm (list = ls(all= TRUE))
+```
+##2 Suppose a car manufacturer claims a model gets at least 25 mpg. A consumer group asks 10 owners of this model to calculate their mpg and the mean value was 22 with a standard deviation of 1.5. Is the manufacturer's claim supported at 95%confidence level.
+H0: mu > = 25
+H1: mu < 25
+```{r, results="hold", comment = NA}
+rm (list = ls(all= TRUE))
+mu = 25
+xbar = 22
+sigma = 1.5
+n = 10
+#N < 30 so t distribution with 9 degrees of freedom (n-1)
+
+t = (xbar - mu)/(sigma/sqrt(10))
+t
+tcrit = qt(0.05, 9)
+tcrit
+if (t >  tcrit)
+{
+  print ("Null hypothesis is not rejected")
+} else {
+  print ("Null hypothesis is rejected")
+}
+```
+##3 An outbreak of Salmonella-related illness was attributed to ice cream produced at a certain factory. Scientists measured the level of Salmonella in 9 randomly sampled batches of ice cream. The levels (in MPN/g) were: 0.593 0.142 0.329 0.691 0.231 0.793 0.519 0.392 0.418. Is there evidence that the mean level of Salmonella in the ice cream is greater than 0.3 MPN/g
+H0: mu <=  0.3
+H1: mu < 0.3
+```{r, results="hold", comment = NA}
+rm (list = ls(all= TRUE))
+mu = 0.3
+sigma = 1.5
+levels = c(0.593, 0.142, 0.329, 0.691, 0.231, 0.793, 0.519, 0.392, 0.418)
+
+xbar = mean(levels)
+n = 9
+#N < 30 so t distribution with 9 degrees of freedom (n-1)
+
+df = n-1
+t = (xbar - mu)/(sd(levels)/sqrt(df))
+t
+tcrit = qt(0.95, 8)
+tcrit
+if (t <  tcrit)
+{
+  print ("Null hypothesis is not rejected")
+} else {
+  print ("Null hypothesis is rejected")
+}
+t.test(levels, alternative = "greater", mu = 0.3) 
+```
+##4. 6 subjects were given a drug (treatment group) and an additional 6 subjects a placebo (control group). Their reaction time to a stimulus was measured (in ms). The outcome of both the group as follows
+Control = 91, 87, 99, 77, 88, 91
+Treat = 101, 110, 103, 93, 99, 104
+Test whether the drug has an effect or not (Assume higher reaction time is better ) ?
+H0: muCtrl <=  muTreat
+H1: muTreat >  muCtrl
+```{r, results="hold", comment = NA}
+rm (list = ls(all= TRUE))
+Control = c(91, 87, 99, 77, 88, 91)
+Treat = c(101, 110, 103, 93, 99, 104)
+vc= sd(Control) * sd(Control)
+vt = sd(Treat) * sd(Treat)
+vc/vt
+t.test( Treat, Control, alternative = "greater", var.equal = F)
+```
+##5. A study was performed to test whether cars get better mileage on premium gas than on regular gas. Each of 10 cars was first filled with either regular or premium gas, decided by a coin toss, and the mileage for that tank was recorded. The mileage was recorded again for the same cars using the other kind of gasoline. Test to determine whether cars get significantly better mileage with premium gas
+Reg : 16, 20, 21, 22, 23, 22, 27, 25, 27, 28 Prem : 19, 22, 24, 24, 25, 25, 26, 26, 28, 32
+H0: muCtrl <=  muTreat
+H1: muTreat >  muCtrl
+```{r, results="hold", comment = NA}
+rm (list = ls(all= TRUE))
+Reg = c( 16, 20, 21, 22, 23, 22, 27, 25, 27, 28)
+Prem = c(19, 22, 24, 24, 25, 25, 26, 26, 28, 32)
+
+vr= sd(Reg) * sd(Reg)
+vp = sd(Prem) * sd(Prem)
+print("Ratio of Premium/Regular =") 
+print(vr/vp)
+t.test(Prem, Reg, alternative = "greater", paired = TRUE)
+```
+##6. A national survey agency conducts a nationwide survey on consumer satisfaction and finds out the response distribution as follows:
+Excellent: 8% Good: 47% Fair: 34% Poor: 11%
+A store manager wants to find if these results of customer survey apply to the customers of super market in her city. So, she interviews 207 randomly selected customers and asked them to rate their responses. The results of this local survey are given below. Determine if the local responses from this survey are the same as expected frequencies of the national survey, at 95% confidence level.
+ 
+Response Frequency
+Excellent 21
+Good      109
+Fair      62
+Poor      15
+```{r, results="hold", comment = NA}
+rm (list = ls(all= TRUE))
+n = 207
+df = n-1
+observed = c(21, 109, 62, 15)
+expected = (c(8, 47, 34, 11)/100)*sum(observed)
+H0: Confirming to national survey
+H1: Not Confirming to national survey
+test_stat = (Oi - Ei)*(Oi - Ei) / Ei
+crit <- qchisq(0.05, 3, lower.tail = F)
+``` 
+##7. A survey is conducted by a gaming company that makes three video games. It wants to know if the preference of game depends on the gender of the player. Total number of participants is 1000. Here is the survey result
+      Game A Game B Game C Total
+Male    200    150    50    400
+Female  250    300    50    600
+Total   450    450    100   1000
+a. State the null hypothesis and alternate hypothesis. b. Calculate the degrees of freedom.
+```{r, results="hold", comment = NA}
+rm (list = ls(all= TRUE))
+observed <- matrix(c(200,150, 50, 250, 300, 60), byrow = TRUE, ncol = 3)
+test_stat <- chisq.test(observed)
+crit <- qchisq(p = 0.05, df = (nrow(observed)-1)*ncol(observed), lower.tail = FALSE)
+```

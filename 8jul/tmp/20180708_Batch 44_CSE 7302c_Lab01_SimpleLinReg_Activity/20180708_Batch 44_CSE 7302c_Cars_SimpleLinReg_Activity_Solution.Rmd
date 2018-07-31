@@ -1,0 +1,524 @@
+---
+title: "Simple Linear Regression"
+author: "INSOFE Lab"
+date: "08th July 2018"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+
+---
+
+**NOTE** Before starting, please remember to clear your environment, you can do that by running the following code chunk
+
+```{r}
+
+rm(list = ls(all=TRUE))
+
+```
+
+# Agenda 
+
+* Get the data
+
+* Ask an interesting question
+
+* Explore the data
+
+* Clean and Process the Data
+
+* Model the data
+
+* Evaluation and Communication
+
+
+# Reading & Understanding the Data
+
+Make sure the dataset is located in your current working directory, else you can change your working directory using the "setwd()" function.
+
+```{r}
+
+cars_data <- read.csv("cars.csv")
+
+```
+
+Use the str() function to get a feel for the dataset. This function allows you to get the dimensions of the dataset and also helps you glance through the names, types and a few observations of variables from the dataset.
+
+```{r}
+
+str(cars_data)
+
+```
+
+The dataset has 60 observations of 8 variables, the descriptions of the variables are given below :
+
+1) **Price** : The cost of the car
+
+2) **Country** : The country in which the car is up for sale
+
+3) **Reliability** : An ordinal metric for understanding the reliability of the car
+
+4) **Mileage** : The fuel efficiency of the car
+
+5) **Type** : A categorical variable defining the category to which the car belongs.
+
+6) **Weight** : The weight of the car
+
+7) **Displacement** : Represents the engine displacement of the car
+
+8) **HP** : Horsepower of the car, a unit that measures it's power
+
+
+To understand how the variables in the dataset are distributed, use the summary() function to get descriptive statistics of all the numerical variables in the dataset, for categorical variables it gives the frequencies of the different levels.
+
+```{r}
+
+summary(cars_data)
+
+```
+
+We can observe from the above two outputs that "Reliability" was read in as a numerical attribute, we'll have to convert it later to a factor (categorical attribute)
+
+# Understanding Cars
+
+**What type of cars are priced higher?**
+
+**Are heavy cars more expensive**
+
+**Are cars with higher mileage priced lower?**
+
+You are encouraged to ask other questions (not just about prices of cars) and answer them using the dataset below.
+
+# Exploratory analysis
+
+Let's visually see how the explanatory variables in the dataset are related to the response variables
+
+## Scatter Plots
+
+The Scatter plots below are constructed using the "plot()" function in base R. We can now visually understand the relationships between the explanatory and the response variables.
+
+```{r}
+
+par(mfrow = c(2,2)) # Splits the plotting pane 2*2
+
+plot(cars_data$Weight, cars_data$Price, xlab = "Weight", ylab = "Price", main = "Weight vs Price")
+
+plot(cars_data$Mileage, cars_data$Price, xlab = "Mileage", ylab = "Price", main = "Mileage vs Price")
+
+plot(cars_data$Disp., cars_data$Price, xlab = "Displacement", ylab = "Price", main = "Displacement vs Price")
+
+plot(cars_data$HP, cars_data$Price, xlab = "Horse Power", ylab = "Price", main = "Horse Power vs Price")
+
+```
+
+From the above plots, we can immediately see a few intereseting relationships. The "Weight", "HP" and "Disp." have a positive relationship with the "Price" of the car. We can also see an interesting pattern here that the "Mileage" of the car is negatively related to the "Price" of the car.
+
+### Correlation Plot
+
+Now, let's plot a Correlation plot by using the "corrplot()" function from the "corrplot" package.
+
+```{r}
+#install.packages('corrplot')
+library(corrplot) # load the corrplot library
+
+# the "corrplot()" function takes a correlation matrix as an input, hence we use the "cor()" function from base R to get the correlation matrix. The (use = "complete.obs") parameter tells the "cor()" function to compute correlations where only all the observations are present i.e. remove all the records with missing values and compute the correlation matrix.
+
+cor_matrix <- cor(cars_data[,c("Weight", "Mileage", "Disp.", "HP", "Price")], use = "complete.obs")
+
+corrplot(cor_matrix, method = "number")
+
+```
+
+From the above correlation plot, we can see that "Weight" has the highest correlation with "Price". The above plot is great to quickly get a grasp of the inter-relationships between the variables in the dataset.
+
+# Cleaning and Processing the Data
+
+Now, you have to do a set of tasks that vary from data set to data set, from converting the data types of variables to imputing missing values. The steps followed below are suitable only for this dataset.
+
+* The "Reliability" variable in the dataset is a categorical variable and hence must be converted to a factor.
+
+```{r}
+
+# Convert Reliability to a factor
+
+cars_data[, "Reliability"] <- as.factor(cars_data[, "Reliability"])
+
+```
+
+It's important to check for missing values in a given dataset, handle missing values in the dataset, imputing these values is one way, the other being omitting the missing values. Here we remove the missing values.
+
+```{r}
+
+# find out the number of missing values in the dataset
+
+sum(is.na(cars_data))
+
+# Remove all records with missing values
+
+cars_data <- na.omit(cars_data)
+
+```
+
+
+* The numeric variables have to be standardized in the dataset to make the regression coefficients much more meaningful and readily interpretable.
+
+* Do not standardize the target variable as we need it in it's original state for meaningful predictions.
+
+```{r}
+
+# Subset the required columns and then use the "scale()" function for standardization
+
+cars_numeric_data <- scale(cars_data[, !(names(cars_data) %in% c("Price", "Reliability", "Country", "Type"))])
+
+# Replace the above variables by the standardized ones in the "cars_data" dataframe
+
+cars_data[, !(names(cars_data) %in% c("Price", "Reliability", "Country", "Type"))] <- cars_numeric_data
+
+str(cars_data)
+
+
+```
+
+
+The data now has to be split into train and test sets. The test set should only be used for reporting the chosen performance metric and should not be used during the analysis. Here we use 75% of the data points to train our models.
+
+```{r}
+
+# We can control the randomness of the sampling for future reproducibility by using the "set.seed()" function
+
+set.seed(007)
+
+# The "sample()" function helps us randomly sample the row numbers. The x parameter takes a vector as an input (here the vector is a sequence of numbers from 1 to the number of rows in dataset). The size parameter takes the number of elements to be randomly sampled
+
+train_rows <- sample(x = 1:nrow(cars_data), size = 0.75*nrow(cars_data))
+
+# We use the above indices to subset the train and test sets from the data
+
+train_data <- cars_data[train_rows, ]
+
+test_data <- cars_data[-train_rows, ]
+
+```
+
+# Model the Data
+
+We'll be using simple linear regression to model the prices of cars.
+
+## Model 1 (Weight vs Price)
+
+In the first model, we will use "Weight" as the explanatory variable, as it has the highest correlation with "Price", which is our response variable.
+
+```{r}
+
+# the "lm()" function helps us build our linear regression model
+
+model1 <- lm(formula = Price ~ Weight, data = train_data)
+
+```
+
+calling the "summary()" function on the model we built, we get the important model details, such as the R2 value, coefficients and their significance and also the distribution of the residuals.
+
+```{r}
+
+summary(model1)
+
+```
+
+**Residual Plots for Model 1**
+
+By calling the "plot()" function on the linear regression model object, we get the residual plots. 
+
+```{r}
+
+par(mfrow = c(2,2)) # Splits the plotting pane 2*2
+
+plot(model1) # Plot the residual plots
+
+```
+
+
+## Other Models
+
+Below, we build multiple simple linear regression models using other variables from the dataset.
+
+### Model 2 (Mileage vs Price)
+
+Get ready to build your second model! Use "lm()" to build your model and "summary()" to understand the model.
+
+```{r}
+
+model2 <- lm(Price ~ Mileage,
+            data = train_data)
+
+summary(model2)
+
+```
+
+
+**Residual Plots for Model 2**
+
+```{r}
+
+par(mfrow = c(2,2)) # Splits the plotting pane 2*2
+
+plot(model2) # Plot the residual plots
+
+```
+
+
+
+### Model 3 (Displacement vs Price)
+
+Get ready to build your third model! Use "lm()" to build your model and "summary()" to understand the model.
+
+```{r}
+
+model3 <- lm(Price ~ Disp.,
+            data = train_data)
+
+summary(model3)
+
+```
+
+
+**Residual Plots for Model 3**
+
+```{r}
+
+par(mfrow = c(2,2)) # Splits the plotting pane 2*2
+
+plot(model3) # Plot the residual plots
+
+```
+
+
+### Model 4 (Horse Power vs Price)
+
+Get ready to build your fourth model! Use "lm()" to build your model and "summary()" to understand the model.
+
+```{r}
+
+model4 <- lm(Price ~ HP,
+            data = train_data)
+
+summary(model4)
+
+```
+
+
+**Residual Plots for Model 4**
+
+```{r}
+
+par(mfrow = c(2,2)) # Splits the plotting pane 2*2
+
+plot(model4) # Plot the residual plots
+
+```
+
+# Evaluation
+
+## R2 values
+
+Here, we plot the R^2 values of the models we built, using the R^2 values we are going to pick the most satisfactory model.
+
+```{r}
+
+# Create a vector of names of the models
+
+model_names <- c("Weight vs Price", "Mileage vs Price",
+                 "Disp. vs Price", "HP vs Price")
+
+# To access the r2 values we have to use "$" on the "summary()" of the model.
+
+# Create a vector of r2 values of all the models
+
+r2_values <- c(summary(model1)$r.squared, summary(model2)$r.squared,
+               summary(model3)$r.squared, summary(model4)$r.squared)
+
+# We use the "cbind()" function to bind those two vectors.
+
+r2 <- cbind(model_names, r2_values)
+
+# Construct a bar plot of the r2 values of the above models
+
+barplot(r2_values, names.arg = r2[,1], cex.names = 0.78, ylim = c(0, 0.8),
+        main = "A Barplot of R^2 Values of Various Models", xlab = "Models",
+        ylab = "Variance in Price Explained (R^2)")
+
+```
+
+The "Weight vs Price" model has the best R^2 score. So we pick it as the final model.
+
+# Communication
+
+## Prediction
+
+Predict the prices of unseen cars, using the chosen model.
+
+```{r}
+
+# The "predict()" function helps us predict on data using a model
+
+preds_model <- predict(model1, test_data[, !(names(test_data) %in% c("Price"))])
+preds_model
+
+```
+
+## Performance Metrics
+
+Once we choose the model we have to report performance metrics on the test data. We are going to report three error metrics for regression.
+
+### Error Metrics for Regression
+
+* Mean Absolute Error (MAE)
+
+Create a function called mae that measures the mean absolute error, given the actual and predicted points.
+
+$$MAE = \dfrac{1}{n}\times|\sum_{i = 1}^{n}y_{i} - \hat{y_{i}}|$$
+
+```{r}
+
+# using the "function()" function, we can create a function which would compute the error if we pass on two parameters to it
+
+mae <- function(actual, predicted){
+  
+  error <- actual - predicted
+  
+  mean(abs(error))
+  
+}
+
+```
+
+* Mean Squared Error (MSE)
+
+Create a function called mse that measures the mean squared error, given the actual and predicted points.
+
+$$MSE = \dfrac{1}{n}\times\sum_{i = 1}^{n}(y_{i} - \hat{y_{i}})^2$$
+
+```{r}
+
+mse <- function(actual, predicted){
+  
+  error <- actual - predicted
+  
+  mean(error^2)
+  
+}
+
+```
+
+* Root Mean Squared Error (RMSE)
+
+Create a function called rmse that measures the root mean squared error, given the actual and predicted points.
+
+$$RMSE = \sqrt{\dfrac{1}{n}\times\sum_{i = 1}^{n}(y_{i} - \hat{y_{i}})^2}$$
+
+```{r}
+
+rmse <- function(actual, predicted){
+  
+  error <- actual - predicted
+  
+  sqrt(mean(error^2))
+  
+}
+
+```
+
+### Report Performance Metrics
+
+Report performance metrics obtained by using the chosen model on the test data.
+
+```{r}
+
+mae(test_data$Price, preds_model)
+
+mse(test_data$Price, preds_model)
+
+rmse(test_data$Price, preds_model)
+
+```
+
+* Evaluation of regression models can also be done by calling the "regr.eval()" function from the "DMwR" package
+
+```{r}
+
+library(DMwR)
+
+regr.eval(test_data$Price, preds_model)
+
+```
+
+* Write down the formula for the model
+
+```{r}
+
+summary(model1)
+
+```
+
+The formula obtained by building our chosen regression model is: 
+
+$$PriceofCar = 12605.2 + 3428.9\times (ScaledWeightofCar)$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,26 @@
+---
+title: "arules"
+author: "Sriram"
+date: "7/28/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Clearing environment variables
+```{r}
+rm(list=ls(all=TRUE))
+
+``` 
+
+Loading required libraries
+
+```{r}
+# install.packages('arules')
+library(arules)
+data("Groceries")
+inspect(Groceries[1:10])
+file.choose()
+```
+

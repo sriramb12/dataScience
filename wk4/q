@@ -1,0 +1,26 @@
+1. Create a list 'mySecondList' with the following elements in it: 'a', 'b', 23, True. Extract out the last element using reverse indexing. Change the element at index 1 to 'bat'. Print out the modified list.
+1. Read in an integer number using ‘input’ function . Using if-else statement, check if the number is even or odd. If even, print out "Number is even". If odd, print out "Number is odd" (HINT: Use % or .format operator). What if the number is 0?
+1. Using a for loop and range() function, print out all the odd numbers between 20-30.
+1. Create two variables: 'var1' with values 1-5 and 'var2' with values 10-20 in steps of 2 (i.e., 10,12,14,... etc). Using list comprehensions, print out result of (var1+var2) only if (var1+var2) is a multiple of 3.
+Create a dictionary 'myDict' with the following (key, value) pairs. ('Name', "XYZ"), ('Batch', 44), ("Location", "Bangalore"). Iterate over the dictionary and print out the following (order doesn't matter):
+1. My Name is XYZ
+My Batch is 44
+My Location is Bangalore
+Create a tuple named 'myTup' with the following elements: 1, 2, 'abc'. Print this tuple. Access the first two elements of the tuple. Can you add another element 'xyz' to myTup? What should we do if we want to get (1, 2, 'abc', 'xyz') using the existing tuple?
+Define a function which would take a number 'n' as input and compute the sum of natural numbers till n. Example if input number is 5, the function returns the result: 1+2+3+4+5
+HINT: You can also use the shortcut formula n(n+1)/2. So for n = 5, result = 5*6/2 = 15
+Write a function 'F' which would take in two numbers. Based on user choice 1 == add the numbers or 2 == multiply the two numbers, perform the operation and return the appropriate results.
+Create a lambda function which would take in 3 inputs i, j and k, and computes the multiplication of i, j and k.
+Create a lambda function to multiply 5 to any given number.
+a. Create a list 'myList' with numbers 0-5. Map the created lambda function to myList. Print the results.
+Create a list with the following elements: 'a', 'b', 'c', 'i', 'o'. Using ‘filter’ function , extract out the vowels in the list.
+Write a function that takes it's input as a list of integers and returns the sum of the list of squared values of integers which are odd from the input list.
+Read the "train.csv" file provided to you into python and print the
+a. summary of the dataset.
+b. the first and last 3 rows of the dataset.
+For a list of lists containing the first names and last names, use list comprehension to obtain a list of full names, e.g. for an input list [['Bruce', 'Wayne'], ['Hadley', 'Wickham'],
+['Clark', 'Kent']] the return value should be ['Bruce Wayne', 'Hadley Wickham', 'Clark Kent'].
+15) Create a data-frame using three lists:
+L1 = [“Lamborghini”, “Bugatti”, “Ferrari”, ”Audi R8”, “Tesla”] L2 = [1.5, 1, 3, 4, 10]
+L3 = [“Not bought”, “Bought”, “Not bought”, “Bought”, “Not bought”]
+16) In the train.csv function apply the data pre-processing methods discussed in class. There are no specific questions for this, just play around with the dataset and make sure you are familiar with the functionality and syntax.
